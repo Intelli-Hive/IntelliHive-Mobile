@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../Login_Page/background.dart';
+import '../Welcome_Page/background.dart';
 import '../Login_Page/login_page.dart';
 import '../Login_Page/rounded_button.dart';
 import '../SignUp_Page/sign_up_page.dart';

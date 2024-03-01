@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Login_Page/body.dart';
+import 'body.dart';
 
 class Profil extends StatefulWidget {
   const Profil({super.key});

@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intellihive_mobile_app/services/get_id_service.dart';
 
-import 'get_id_service.dart';
 
 class AuthService{
   GetId getId = GetId();
@@ -33,7 +33,7 @@ class AuthService{
       if(userCredential.user != null){
         Fluttertoast.showToast(msg: "Giriş Başarılı!");
         //navigator.push(MaterialPageRoute(builder: (context) => Anasayfa(),));
-        navigator.pop();
+        Navigator.popUntil(context, (route) => route.isFirst);
       }
     } on FirebaseAuthException catch (e){
       Fluttertoast.showToast(msg: e.message!, toastLength: Toast.LENGTH_LONG);
