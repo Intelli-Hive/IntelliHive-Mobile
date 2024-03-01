@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'Pages/Home_Page/home_main.dart';
 import 'Pages/Profile_Page/profile_main.dart';
-import 'Pages/page3.dart';
+import 'Pages/Hive_Page/hive_main.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
@@ -59,7 +59,7 @@ class _PageViewDemoState extends State<PageViewDemo> {
         controller: _pageController,
         children: [
           HomePage(),
-          Page2(),
+          AddHivePage(),
           ProfilePage(),
         ],
         onPageChanged: onPageChange,
@@ -73,7 +73,7 @@ class _PageViewDemoState extends State<PageViewDemo> {
       currentIndex: selectedPage,
       items: [
         BottomNavigationBarItem(label: "HomePage", icon: Icon(Icons.pages)),
-        BottomNavigationBarItem(label: "Page2", icon: Icon(Icons.pages)),
+        BottomNavigationBarItem(label: "HivePage", icon: Icon(Icons.pages)),
         BottomNavigationBarItem(label: "ProfilePage", icon: Icon(Icons.pages)),
       ],
       onTap: (int index) {
