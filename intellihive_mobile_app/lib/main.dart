@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:intellihive_mobile_app/Pages/data_per_user.dart';
 
 import 'Pages/Home_Page/home_main.dart';
 import 'Pages/Profile_Page/profile_main.dart';
@@ -58,7 +59,8 @@ class _PageViewDemoState extends State<PageViewDemo> {
       child: PageView(
         controller: _pageController,
         children: [
-          HomePage(),
+          //HomePage(),
+          DataPerUserPage(title: "DataPerUser"),
           AddHivePage(),
           ProfilePage(),
         ],
@@ -72,9 +74,10 @@ class _PageViewDemoState extends State<PageViewDemo> {
     return BottomNavigationBar(
       currentIndex: selectedPage,
       items: [
-        BottomNavigationBarItem(label: "HomePage", icon: Icon(Icons.pages)),
+        BottomNavigationBarItem(label: "HomePage", icon: Icon(Icons.home)),
         BottomNavigationBarItem(label: "HivePage", icon: Icon(Icons.pages)),
-        BottomNavigationBarItem(label: "ProfilePage", icon: Icon(Icons.pages)),
+        BottomNavigationBarItem(label: "ProfilePage", icon: Icon(Icons.person)),
+        //BottomNavigationBarItem(label: "DataPerUser", icon: Icon(Icons.person)),
       ],
       onTap: (int index) {
         _pageController.animateToPage(index,
