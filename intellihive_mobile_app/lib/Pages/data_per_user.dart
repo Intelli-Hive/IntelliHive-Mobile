@@ -1,12 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intellihive_mobile_app/Pages/Home_Page/hive_control.dart';
 
 
 class DataPerUserPage extends StatefulWidget {
-  DataPerUserPage({Key? key, required this.title}) : super(key: key);
-
+  //final String docId;
   final String title;
+
+  DataPerUserPage({Key? key, required this.title}) : super(key: key);
 
   @override
   _DataPerUserPageState createState() => _DataPerUserPageState();
@@ -47,10 +49,10 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                       return ListView(
                         children: snapshot.data!.docs.map((DocumentSnapshot document) {
                           Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-                          String kovan_plaka = data['kovan_plaka'] ?? "Kovan Plaka yok";
-                          String kovan_sicaklik = data['kovan_sicaklik'] ?? "Kovan Sıcaklık Yok";
-                          String kovan_nem = data['kovan_nem'] ?? "Kovan Nem Yok";
-                          String kovan_agirlik = data['kovan_agirlik'] ?? "Kovan Ağırlık Yok";
+                          String kovan_plaka = data['kovan_plaka'] ?? "Değer Yok";
+                          String kovan_sicaklik = data['kovan_sicaklik'] ?? "Değer Yok";
+                          String kovan_nem = data['kovan_nem'] ?? "Değer Yok";
+                          String kovan_agirlik = data['kovan_agirlik'] ?? "Değer Yok";
 
                           return BeehiveCard(
                             hiveName: kovan_plaka,
@@ -79,6 +81,7 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
   }
 }
 
+
 class BeehiveCard extends StatelessWidget {
   final String hiveName;
   final String humidity;
@@ -97,6 +100,7 @@ class BeehiveCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.grey[200],
@@ -145,8 +149,10 @@ class BeehiveCard extends StatelessWidget {
             style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 10),
+
           ElevatedButton(
             onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {return HiveControl();},),);
               // Butona basıldığında yapılacak işlemler buraya yazılabilir
             },
             child: const Text('İncele'),
