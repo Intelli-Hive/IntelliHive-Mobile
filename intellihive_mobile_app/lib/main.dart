@@ -1,30 +1,26 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intellihive_mobile_app/Pages/data_per_user.dart';
-
-import 'Pages/Home_Page/home_main.dart';
 import 'Pages/Profile_Page/profile_main.dart';
 import 'Pages/Hive_Page/hive_main.dart';
-
 import 'package:firebase_core/firebase_core.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  Platform.isAndroid ?
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: "AIzaSyAqUhyRZPr0vK5SyTkueGfgRqB-gd8jYsA",
-      appId: "1:954266985138:android:3af4e5cfe4ceeb8f589fab",
-      messagingSenderId: "954266985138",
-      projectId: "intellihivebee",
-    )
-  ) : await Firebase.initializeApp();
+  Platform.isAndroid
+      ? await Firebase.initializeApp(
+          options: const FirebaseOptions(
+          apiKey: "AIzaSyAqUhyRZPr0vK5SyTkueGfgRqB-gd8jYsA",
+          appId: "1:954266985138:android:3af4e5cfe4ceeb8f589fab",
+          messagingSenderId: "954266985138",
+          projectId: "intellihivebee",
+        ))
+      : await Firebase.initializeApp();
   runApp(
-      const MaterialApp(
-    home: PageViewDemo(),
+    const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: PageViewDemo(),
     ),
   );
 }
@@ -68,7 +64,6 @@ class _PageViewDemoState extends State<PageViewDemo> {
       ),
     );
   }
-
 
   Widget buildBottomNav() {
     return BottomNavigationBar(
