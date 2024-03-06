@@ -5,7 +5,6 @@ import 'package:intellihive_mobile_app/Pages/Home_Page/hive_control.dart';
 
 
 class DataPerUserPage extends StatefulWidget {
-  //final String docId;
   final String title;
 
   DataPerUserPage({Key? key, required this.title}) : super(key: key);
@@ -13,7 +12,6 @@ class DataPerUserPage extends StatefulWidget {
   @override
   _DataPerUserPageState createState() => _DataPerUserPageState();
 }
-
 
 class _DataPerUserPageState extends State<DataPerUserPage> {
   @override

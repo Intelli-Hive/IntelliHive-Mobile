@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AddService{
+class HiveService{
   FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> AddHive({
     required String userId,
@@ -24,7 +25,9 @@ class AddService{
       });
 
       await FirebaseFirestore.instance
-          .collection('AllHives')
+          .collection('Hives')
+          .doc('AllHives')
+          .collection('Datas')
           .add({
         'kovan_plaka': kovan_plaka,
         'kovan_sicaklik': kovan_sicaklik,
@@ -34,6 +37,15 @@ class AddService{
     } catch (e) {
       print('Hata: $e');
     }
+  }
+
+
+  Future<Stream<QuerySnapshot>> getHiveData(String userId) async {
+    return await _firestore
+          .collection('Hives')
+          .doc('UserHives')
+          .collection(userId)
+          .snapshots();
   }
 
   String getUserId() {
