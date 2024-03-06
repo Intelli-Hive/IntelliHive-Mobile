@@ -14,7 +14,7 @@ class AddHivePage extends StatefulWidget {
 String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
 class _AddHivePageState extends State<AddHivePage> {
-
+  double _sliderValue = 0.0;
   final CollectionReference _userHives =
   FirebaseFirestore.instance
       .collection('Hives')
@@ -46,15 +46,29 @@ class _AddHivePageState extends State<AddHivePage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             TextField(
               controller: _kovanPlakaController,
               decoration: const InputDecoration(labelText: 'Kovan Plakası'),
             ),
             TextField(
+              controller: _kovanSicaklikController,
+              decoration: const InputDecoration(labelText: 'Kovan Plakası'),
+            ),
+            Slider(
+              value: _sliderValue,
+              min: 0,
+              max: 180,
+              onChanged: (value) {
+                setState(() {
+                  _kovanNemController.text = value.toStringAsFixed(3);
+                });
+              },
+            ),
+            TextField(
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
-              controller: _kovanSicaklikController,
+              controller: _kovanAgirlikController,
               decoration: const InputDecoration(labelText: 'Kovan Sıcaklık'),
             ),
             const SizedBox(height: 20),
@@ -63,12 +77,16 @@ class _AddHivePageState extends State<AddHivePage> {
                 onPressed: () async {
                   final String plaka = _kovanPlakaController.text;
                   final String sicaklik = _kovanSicaklikController.text;
+                  final String nem = _kovanNemController.text;
+                  final String agirlik = _kovanAgirlikController.text;
                   if (plaka != null) {
                     await _userHives
                         .doc(documentSnapshot!.id)
-                        .update({"kovan_plaka": plaka, "kovan_sicaklik": sicaklik});
+                        .update({"kovan_plaka": plaka, "kovan_sicaklik": sicaklik, "kovan_nem": nem, "kovan_agirlik": agirlik});
                     _kovanPlakaController.text = '';
                     _kovanSicaklikController.text = '';
+                    _kovanNemController.text = '';
+                    _kovanAgirlikController.text = '';
                   }
                 },
             )
@@ -127,25 +145,51 @@ class _AddHivePageState extends State<AddHivePage> {
                   return Card(
                     margin: const EdgeInsets.all(10),
                     child: ListTile(
-                      title: Text(documentSnapshot['kovan_plaka']),
-                      subtitle: Text(documentSnapshot['kovan_sicaklik']),
+                      title: Text(
+                        documentSnapshot['kovan_plaka'],
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Sıcaklık: ${documentSnapshot['kovan_sicaklik']}',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            'Nem: ${documentSnapshot['kovan_nem']}',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            'Ağırlık: ${documentSnapshot['kovan_agirlik']}',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
                       trailing: SizedBox(
-                        width: 100,
+                        width: 120,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             IconButton(
-                                onPressed: () => _update(documentSnapshot),
-                                icon: const Icon(Icons.calendar_view_week)
+                              onPressed: () => _update(documentSnapshot),
+                              icon: const Icon(Icons.edit),
+                              color: Colors.blue,
                             ),
                             IconButton(
-                                onPressed: () => _delete(documentSnapshot.id),
-                                icon: const Icon(Icons.delete)
-                            )
+                              onPressed: () => _delete(documentSnapshot.id),
+                              icon: const Icon(Icons.delete),
+                              color: Colors.red,
+                            ),
                           ],
                         ),
                       ),
                     ),
                   );
+
                 },
             );
           }

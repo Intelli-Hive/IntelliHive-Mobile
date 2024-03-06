@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intellihive_mobile_app/Pages/Profile_Page/Welcome_Page/profile_page.dart';
 
+import 'Login_Page/login_page.dart';
+import 'Login_Page/rounded_button.dart';
+
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
 
@@ -11,16 +14,19 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  bool isUserLoggedOut = FirebaseAuth.instance.currentUser == null;
   @override
   void initState() {
     super.initState();
-    // Profil sayfasına otomatik olarak yönlendirme yap
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Profil()),
-      );
-    });
+    if (isUserLoggedOut) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Profil()),
+        );
+      });
+    }
+    //TODO sorun cikarsa buraya bak cikis yap butonu ve yukarıdaki isUserLoggedOut kontrolu eklendi
   }
 
   static const String _title = 'Profil Sayfası';
@@ -145,6 +151,24 @@ class ProfilePageMain extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
+              ),
+              RoundedButton(
+                text: "Çıkış Yap",
+                press: () async {
+                  try {
+                    await FirebaseAuth.instance.signOut();
+                    // Çıkış başarılı olursa, örneğin giriş sayfasına yönlendirme yapabilirsiniz.
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
+                  } catch (e) {
+                    // Hata durumunda ekrana hata mesajını göstermek için bir SnackBar kullanabilirsiniz.
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Çıkış yaparken bir hata oluştu.'),
+                      ),
+                    );
+                  }
+                },
+                color: Colors.redAccent.withOpacity(0.7),
               ),
             ],
           ),

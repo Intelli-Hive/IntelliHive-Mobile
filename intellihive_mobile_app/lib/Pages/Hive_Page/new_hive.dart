@@ -10,25 +10,14 @@ class NewHive extends StatefulWidget {
   State<NewHive> createState() => _NewHiveState();
 }
 
-Future<String> getCurrentUserId() async {
-  FirebaseAuth auth = FirebaseAuth.instance;
-  User? user = auth.currentUser;
-
-  if (user != null) {
-    // Kullanıcı oturum açmışsa, kullanıcının kimlik bilgisini döndür
-    return user.uid;
-  } else {
-    // Kullanıcı oturum açmamışsa, boş bir dize döndür
-    return '';
-  }
-}
-
 
 class _NewHiveState extends State<NewHive> {
   final _kovanPlakaController = TextEditingController();
   final _kovanSicaklikController = TextEditingController();
   final _kovanNemController = TextEditingController();
   final _kovanAgirlikController = TextEditingController();
+
+  String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +198,6 @@ class _NewHiveState extends State<NewHive> {
               Center(
                 child: ElevatedButton(
                   onPressed: () async{
-                    String userId = await getCurrentUserId();
                     HiveService().AddHive(userId: userId, kovan_plaka: _kovanPlakaController.text.trim(), kovan_sicaklik: _kovanSicaklikController.text.trim(), kovan_nem: _kovanNemController.text.trim(), kovan_agirlik: _kovanAgirlikController.text.trim());
 
                     Navigator.pop(context);
@@ -238,8 +226,7 @@ class _NewHiveState extends State<NewHive> {
             ],
           ),
         ),
-      )
-      ,
+      ),
     );
   }
 }
