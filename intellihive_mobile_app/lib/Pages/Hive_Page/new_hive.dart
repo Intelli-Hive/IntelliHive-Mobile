@@ -48,7 +48,7 @@ class _NewHiveState extends State<NewHive> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Title 1', // Başlık 1
+                    'Kovan Plakasını Giriniz', // Başlık 1
                     style: TextStyle(
                       color: Colors.orange, // Turuncu rengi
                       fontSize: 16.0,
@@ -73,7 +73,7 @@ class _NewHiveState extends State<NewHive> {
                       controller: _kovanPlakaController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Enter your text',
+                        hintText: 'Plaka',
                       ),
                     ),
                   ),
@@ -86,7 +86,7 @@ class _NewHiveState extends State<NewHive> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Title 2', // Başlık 2
+                    'Kovan Petek Sayısını Giriniz', // Başlık 2
                     style: TextStyle(
                       color: Colors.orange, // Turuncu rengi
                       fontSize: 16.0,
@@ -111,7 +111,7 @@ class _NewHiveState extends State<NewHive> {
                       controller: _kovanSicaklikController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Enter your text',
+                        hintText: 'Petek Sayısı',
                       ),
                     ),
                   ),
@@ -124,7 +124,7 @@ class _NewHiveState extends State<NewHive> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Title 3', // Başlık 3
+                    'Bu Alan Otomatik Doldurulacaktır', // Başlık 3
                     style: TextStyle(
                       color: Colors.orange, // Turuncu rengi
                       fontSize: 16.0,
@@ -149,8 +149,9 @@ class _NewHiveState extends State<NewHive> {
                       controller: _kovanNemController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Enter your text',
+                        hintText: '0',
                       ),
+                      readOnly: true,
                     ),
                   ),
                 ],
@@ -162,7 +163,7 @@ class _NewHiveState extends State<NewHive> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Title 3', // Başlık 3
+                    'Bu Alan Otomatik Doldurulacaktır', // Başlık 3
                     style: TextStyle(
                       color: Colors.orange, // Turuncu rengi
                       fontSize: 16.0,
@@ -187,8 +188,9 @@ class _NewHiveState extends State<NewHive> {
                       controller: _kovanAgirlikController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Enter your text',
+                        hintText: '0',
                       ),
+                      readOnly: true,
                     ),
                   ),
                 ],
@@ -198,7 +200,7 @@ class _NewHiveState extends State<NewHive> {
               Center(
                 child: ElevatedButton(
                   onPressed: () async{
-                    HiveService().AddHive(userId: userId, kovan_plaka: _kovanPlakaController.text.trim(), kovan_sicaklik: _kovanSicaklikController.text.trim(), kovan_nem: _kovanNemController.text.trim(), kovan_agirlik: _kovanAgirlikController.text.trim());
+                    HiveService().AddHive(userId: userId, kovan_plaka: _kovanPlakaController.text.trim(), kovan_sicaklik: _kovanSicaklikController.text.trim(), kovan_nem: "0", kovan_agirlik: "0");
 
                     Navigator.pop(context);
 

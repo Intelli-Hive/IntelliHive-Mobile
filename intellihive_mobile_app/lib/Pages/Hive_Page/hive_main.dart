@@ -14,7 +14,10 @@ class AddHivePage extends StatefulWidget {
 String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
 class _AddHivePageState extends State<AddHivePage> {
-  double _sliderValue = 0.0;
+  String? _selectedValue;
+  bool _isElectricityChecked = false;
+  List<bool> _electricityStates = [];
+
   final CollectionReference _userHives =
   FirebaseFirestore.instance
       .collection('Hives')
@@ -51,38 +54,50 @@ class _AddHivePageState extends State<AddHivePage> {
               controller: _kovanPlakaController,
               decoration: const InputDecoration(labelText: 'Kovan Plakası'),
             ),
-            TextField(
-              controller: _kovanSicaklikController,
-              decoration: const InputDecoration(labelText: 'Kovan Plakası'),
+            const SizedBox(height: 30),
+            Text(
+              'Kovan Kapağı Açıklık Seviyesi',
             ),
-            Slider(
-              value: _sliderValue,
-              min: 0,
-              max: 180,
-              onChanged: (value) {
-                setState(() {
-                  _kovanNemController.text = value.toStringAsFixed(3);
-                });
-              },
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (int i = 30; i <= 180; i += 30)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _selectedValue = i.toString();
+                            _kovanAgirlikController.text = _selectedValue!;
+                          });
+                        },
+                        child: Text(i.toString()),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.grey,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
             TextField(
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
               controller: _kovanAgirlikController,
-              decoration: const InputDecoration(labelText: 'Kovan Sıcaklık'),
+              readOnly: true,
             ),
+
             const SizedBox(height: 20),
             ElevatedButton(
                 child: const Text('Güncelle'),
                 onPressed: () async {
                   final String plaka = _kovanPlakaController.text;
-                  final String sicaklik = _kovanSicaklikController.text;
-                  final String nem = _kovanNemController.text;
+                  //final String sicaklik = _kovanSicaklikController.text;
+                  //final String nem = _kovanNemController.text;
                   final String agirlik = _kovanAgirlikController.text;
                   if (plaka != null) {
                     await _userHives
                         .doc(documentSnapshot!.id)
-                        .update({"kovan_plaka": plaka, "kovan_sicaklik": sicaklik, "kovan_nem": nem, "kovan_agirlik": agirlik});
+                        .update({"kovan_plaka": plaka, "kovan_agirlik": agirlik});
                     _kovanPlakaController.text = '';
                     _kovanSicaklikController.text = '';
                     _kovanNemController.text = '';
@@ -109,6 +124,20 @@ class _AddHivePageState extends State<AddHivePage> {
         fontSize: 16.0
     );
   }
+  Future<void> _updateElectricityState(bool isElectricityOn, [DocumentSnapshot? documentSnapshot]) async {
+    if (isElectricityOn) {
+      if (documentSnapshot != null)  {
+        _kovanNemController.text = 'true';
+        // Veritabanını güncelle
+        await _userHives.doc(documentSnapshot.id).update({"kovan_nem": "true"});
+      }
+    } else {
+      _kovanNemController.text = 'false';
+      // Veritabanını güncelle
+      await _userHives.doc(documentSnapshot!.id).update({"kovan_nem": "false"});
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -137,60 +166,74 @@ class _AddHivePageState extends State<AddHivePage> {
         stream: _userHives.snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
           if(streamSnapshot.hasData){
+            // Veritabanından gelen öğelerin sayısına göre electricityStates listesini ayarla
+            if (_electricityStates.length != streamSnapshot.data!.docs.length) {
+              _electricityStates = List.generate(streamSnapshot.data!.docs.length, (_) => false);
+            }
             return ListView.builder(
-                itemCount: streamSnapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  final DocumentSnapshot documentSnapshot =
-                      streamSnapshot.data!.docs[index];
-                  return Card(
-                    margin: const EdgeInsets.all(10),
-                    child: ListTile(
-                      title: Text(
-                        documentSnapshot['kovan_plaka'],
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
+              itemCount: streamSnapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                final DocumentSnapshot documentSnapshot =
+                streamSnapshot.data!.docs[index];
+                return Card(
+                  margin: const EdgeInsets.all(10),
+                  child: ListTile(
+                    title: Text(
+                      documentSnapshot['kovan_plaka'],
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Sıcaklık: ${documentSnapshot['kovan_sicaklik']}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          'Nem: ${documentSnapshot['kovan_nem']}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          'Ağırlık: ${documentSnapshot['kovan_agirlik']}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                    trailing: SizedBox(
+                      width: 180,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Text(
-                            'Sıcaklık: ${documentSnapshot['kovan_sicaklik']}',
-                            style: TextStyle(fontSize: 16),
+                          IconButton(
+                            onPressed: () => _update(documentSnapshot),
+                            icon: const Icon(Icons.edit),
+                            color: Colors.blue,
                           ),
-                          Text(
-                            'Nem: ${documentSnapshot['kovan_nem']}',
-                            style: TextStyle(fontSize: 16),
+                          IconButton(
+                            onPressed: () => _delete(documentSnapshot.id),
+                            icon: const Icon(Icons.delete),
+                            color: Colors.red,
                           ),
-                          Text(
-                            'Ağırlık: ${documentSnapshot['kovan_agirlik']}',
-                            style: TextStyle(fontSize: 16),
+                          Switch(
+                            value: _electricityStates[index], // Her bir öğe için ayrı bir durum
+                            onChanged: (value) {
+                              setState(() {
+                                _electricityStates[index] = value; // Değeri değiştir
+                              });
+                              _updateElectricityState(_electricityStates[index], documentSnapshot); // Değişiklik yapıldığında _update metodu çalışsın
+                            },
+                            activeTrackColor: Colors.lightGreenAccent,
+                            activeColor: Colors.green,
                           ),
                         ],
                       ),
-                      trailing: SizedBox(
-                        width: 120,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(
-                              onPressed: () => _update(documentSnapshot),
-                              icon: const Icon(Icons.edit),
-                              color: Colors.blue,
-                            ),
-                            IconButton(
-                              onPressed: () => _delete(documentSnapshot.id),
-                              icon: const Icon(Icons.delete),
-                              color: Colors.red,
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
-                  );
-
-                },
+                  ),
+                );
+              },
             );
           }
           return const Center(
