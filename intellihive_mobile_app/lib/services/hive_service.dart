@@ -11,6 +11,9 @@ class HiveService{
     required String kovan_sicaklik,
     required String kovan_nem,
     required String kovan_agirlik,
+    required String kovan_kapak_derece,
+    required String kovan_kapak_on_off,
+    required String kovan_petek_sayisi,
   }) async {
     try {
       await FirebaseFirestore.instance
@@ -22,6 +25,9 @@ class HiveService{
         'kovan_sicaklik': kovan_sicaklik,
         'kovan_nem': kovan_nem,
         'kovan_agirlik': kovan_agirlik,
+        'kovan_kapak_derece': kovan_kapak_derece,
+        'kovan_kapak_on_off': kovan_kapak_on_off,
+        'kovan_petek_sayisi': kovan_petek_sayisi,
       });
 
       await FirebaseFirestore.instance
@@ -33,6 +39,9 @@ class HiveService{
         'kovan_sicaklik': kovan_sicaklik,
         'kovan_nem': kovan_nem,
         'kovan_agirlik': kovan_agirlik,
+        'kovan_kapak_derece': kovan_kapak_derece,
+        'kovan_kapak_on_off': kovan_kapak_on_off,
+        'kovan_petek_sayisi': kovan_petek_sayisi,
       });
     } catch (e) {
       print('Hata: $e');

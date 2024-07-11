@@ -16,6 +16,9 @@ class _NewHiveState extends State<NewHive> {
   final _kovanSicaklikController = TextEditingController();
   final _kovanNemController = TextEditingController();
   final _kovanAgirlikController = TextEditingController();
+  final _kovanKapakDereceController = TextEditingController();
+  final _kovanKapakOnOffController = TextEditingController();
+  final _kovanPetekSayisiController = TextEditingController();
 
   String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
@@ -108,7 +111,7 @@ class _NewHiveState extends State<NewHive> {
                       ],
                     ),
                     child: TextFormField(
-                      controller: _kovanSicaklikController,
+                      controller: _kovanPetekSayisiController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Petek Sayısı',
@@ -118,89 +121,98 @@ class _NewHiveState extends State<NewHive> {
                 ],
               ),
               SizedBox(height: 20.0), // Bir boşluk ekleyebilirsiniz
-
-              // Üçüncü metin giriş alanı
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Bu Alan Otomatik Doldurulacaktır', // Başlık 3
-                    style: TextStyle(
-                      color: Colors.orange, // Turuncu rengi
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    decoration: BoxDecoration(
-                      color: Colors.orange[100], // Turuncu tonu burada
-                      borderRadius: BorderRadius.circular(10.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.orange.withOpacity(0.5), // Yarı saydamlık ve turuncu tonu
-                          spreadRadius: 2,
-                          blurRadius: 7,
-                          offset: Offset(0, 3), // Gölgenin pozisyonu
-                        ),
-                      ],
-                    ),
-                    child: TextFormField(
-                      controller: _kovanNemController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: '0',
-                      ),
-                      readOnly: true,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20.0), // Bir boşluk ekleyebilirsiniz
+//
+              //// Üçüncü metin giriş alanı
+              //Column(
+              //  crossAxisAlignment: CrossAxisAlignment.start,
+              //  children: [
+              //    Text(
+              //      'Kovan Sıcaklık', // Başlık 3
+              //      style: TextStyle(
+              //        color: Colors.orange, // Turuncu rengi
+              //        fontSize: 16.0,
+              //        fontWeight: FontWeight.bold,
+              //      ),
+              //    ),
+              //    Container(
+              //      padding: EdgeInsets.symmetric(horizontal: 20.0),
+              //      decoration: BoxDecoration(
+              //        color: Colors.orange[100], // Turuncu tonu burada
+              //        borderRadius: BorderRadius.circular(10.0),
+              //        boxShadow: [
+              //          BoxShadow(
+              //            color: Colors.orange.withOpacity(0.5), // Yarı saydamlık ve turuncu tonu
+              //            spreadRadius: 2,
+              //            blurRadius: 7,
+              //            offset: Offset(0, 3), // Gölgenin pozisyonu
+              //          ),
+              //        ],
+              //      ),
+              //      child: TextFormField(
+              //        controller: _kovanSicaklikController,
+              //        decoration: InputDecoration(
+              //          border: InputBorder.none,
+              //          hintText: 'Bu Alan Otomatik Doldurulacaktır',
+              //        ),
+              //        readOnly: true,
+              //      ),
+              //    ),
+              //  ],
+              //),
+              //SizedBox(height: 20.0), // Bir boşluk ekleyebilirsiniz
 
               // Dördüncü metin giriş alanı
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Bu Alan Otomatik Doldurulacaktır', // Başlık 3
-                    style: TextStyle(
-                      color: Colors.orange, // Turuncu rengi
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    decoration: BoxDecoration(
-                      color: Colors.orange[100], // Turuncu tonu burada
-                      borderRadius: BorderRadius.circular(10.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.orange.withOpacity(0.5), // Yarı saydamlık ve turuncu tonu
-                          spreadRadius: 2,
-                          blurRadius: 7,
-                          offset: Offset(0, 3), // Gölgenin pozisyonu
-                        ),
-                      ],
-                    ),
-                    child: TextFormField(
-                      controller: _kovanAgirlikController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: '0',
-                      ),
-                      readOnly: true,
-                    ),
-                  ),
-                ],
-              ),
+              //Column(
+              //  crossAxisAlignment: CrossAxisAlignment.start,
+              //  children: [
+              //    Text(
+              //      'Kovan Nem', // Başlık 3
+              //      style: TextStyle(
+              //        color: Colors.orange, // Turuncu rengi
+              //        fontSize: 16.0,
+              //        fontWeight: FontWeight.bold,
+              //      ),
+              //    ),
+              //    Container(
+              //      padding: EdgeInsets.symmetric(horizontal: 20.0),
+              //      decoration: BoxDecoration(
+              //        color: Colors.orange[100], // Turuncu tonu burada
+              //        borderRadius: BorderRadius.circular(10.0),
+              //        boxShadow: [
+              //          BoxShadow(
+              //            color: Colors.orange.withOpacity(0.5), // Yarı saydamlık ve turuncu tonu
+              //            spreadRadius: 2,
+              //            blurRadius: 7,
+              //            offset: Offset(0, 3), // Gölgenin pozisyonu
+              //          ),
+              //        ],
+              //      ),
+              //      child: TextFormField(
+              //        controller: _kovanNemController,
+              //        decoration: InputDecoration(
+              //          border: InputBorder.none,
+              //          hintText: 'Bu Alan Otomatik Doldurulacaktır',
+              //        ),
+              //        readOnly: true,
+              //      ),
+              //    ),
+              //  ],
+              //),
               SizedBox(height: 20.0), // Bir boşluk ekleyebilirsiniz
 
               Center(
                 child: ElevatedButton(
                   onPressed: () async{
-                    HiveService().AddHive(userId: userId, kovan_plaka: _kovanPlakaController.text.trim(), kovan_sicaklik: _kovanSicaklikController.text.trim(), kovan_nem: "0", kovan_agirlik: "0");
+                    HiveService().AddHive(
+                        userId: userId,
+                        kovan_plaka: _kovanPlakaController.text.trim(),
+                        kovan_sicaklik : "0",
+                        kovan_nem: "0",
+                        kovan_agirlik: "0",
+                        kovan_kapak_derece: "0",
+                        kovan_kapak_on_off: "false",
+                        kovan_petek_sayisi: _kovanPetekSayisiController.text.trim()
+                    );
 
                     Navigator.pop(context);
 
