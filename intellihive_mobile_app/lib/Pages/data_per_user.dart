@@ -14,6 +14,34 @@ class DataPerUserPage extends StatefulWidget {
 }
 
 class _DataPerUserPageState extends State<DataPerUserPage> {
+  String? _selectedValue;
+  bool _isElectricityChecked = false;
+  List<bool> _electricityStates = [];
+  CollectionReference? _userHives;
+
+  final _kovanPetekOnOffController = TextEditingController();
+  final _kovanKapakOnOffController = TextEditingController();
+  final _kovanPolenOnOffController = TextEditingController();
+
+  Future<void> _updateMotorsState(bool isElectricityOn,
+      [DocumentSnapshot? documentSnapshot]) async {
+    if (isElectricityOn) {
+      if (documentSnapshot != null) {
+        _kovanPetekOnOffController.text = 'true';
+        // Veritabanını güncelle
+        await _userHives
+            ?.doc(documentSnapshot.id)
+            .update({"kovan_petek_on_off": "true"});
+      }
+    } else {
+      _kovanPetekOnOffController.text = 'false';
+      // Veritabanını güncelle
+      await _userHives
+          ?.doc(documentSnapshot!.id)
+          .update({"kovan_petek_on_off": "false"});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,58 +52,230 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, AsyncSnapshot<User?> authSnapshot) {
           if (authSnapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           } else if (authSnapshot.hasError) {
-            return Text("Error: ${authSnapshot.error}");
+            return Center(child: Text("Error: ${authSnapshot.error}"));
           } else {
             if (authSnapshot.data != null) {
-              // Kullanıcı oturum açmışsa Firestore'dan verileri çek
+
+              final userId = authSnapshot.data!.uid;
+              _userHives = FirebaseFirestore.instance
+                  .collection('Hives')
+                  .doc('UserHives')
+                  .collection(userId);
+
               return StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection('Hives')
-                    .doc('UserHives') // Eğer belirli bir belge adı varsa, buraya ekle
-                    .collection(authSnapshot.data!.uid) // Kullanıcının UID'si ile koleksiyona eriş
+                    .doc('UserHives')
+                    .collection(authSnapshot.data!.uid)
                     .snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Text("Error: ${snapshot.error}");
+                    return Center(child: Text("Error: ${snapshot.error}"));
                   } else {
                     if (snapshot.data != null) {
-                      // Verileri işle
-                      return ListView(
-                        children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(16.0),
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot document = snapshot.data!.docs[index];
                           Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-                          String kovan_plaka = data['kovan_plaka'] ?? "Değer Yok";
-                          String kovan_sicaklik = data['kovan_sicaklik'] ?? "Değer Yok";
-                          String kovan_nem = data['kovan_nem'] ?? "Değer Yok";
-                          String kovan_agirlik = data['kovan_agirlik'] ?? "Değer Yok";
+                          String kovanPlaka = data['kovan_plaka'] ?? "Değer Yok";
+                          double kovanSicaklik = double.tryParse(data['kovan_sicaklik'].toString()) ?? 0.0;
+                          double kovanNem = double.tryParse(data['kovan_nem'].toString()) ?? 0.0;
+                          double kovanAgirlik = double.tryParse(data['kovan_agirlik'].toString()) ?? 0.0;
+                          bool deviceStatus1 = data['device_status1'] ?? false;
+                          bool deviceStatus2 = data['device_status2'] ?? false;
+                          bool deviceStatus3 = data['device_status3'] ?? false;
 
-                          return BeehiveCard(
-                            hiveName: kovan_plaka,
-                            temperature: kovan_sicaklik,
-                            humidity: kovan_nem,
-                            weight: kovan_agirlik,
-                            numBars: 3,
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            elevation: 4.0,
+                            margin: const EdgeInsets.only(bottom: 16.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.hive,
+                                            size: 40.0,
+                                            color: Colors.amber,
+                                          ),
+                                          SizedBox(width: 8.0),
+                                          Text(
+                                            kovanPlaka,
+                                            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                      // Yuvarlak Chart ve ağırlık göstergesi
+                                      SizedBox(
+                                        height: 100,
+                                        width: 100,
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            CircularProgressIndicator(
+                                              value: kovanAgirlik / 20, // 0-20 kg arasında değer
+                                              backgroundColor: Colors.grey[200],
+                                              color: Colors.green,
+                                              strokeWidth: 8.0,
+                                            ),
+                                            Text(
+                                              "$kovanAgirlik kg",
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 16.0),
+                                  // Sıcaklık ve Nem için Progress Bars
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "Sıcaklık: ${kovanSicaklik.toStringAsFixed(1)}°C",
+                                              style: TextStyle(fontSize: 16.0),
+                                            ),
+                                            SizedBox(width: 8.0),
+                                            Expanded(
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(10.0),
+                                                child: LinearProgressIndicator(
+                                                  value: kovanSicaklik / 100,
+                                                  backgroundColor: Colors.grey[300],
+                                                  color: Colors.redAccent,
+                                                  minHeight: 8.0,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 8.0),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "Nem: ${kovanNem.toStringAsFixed(1)}%",
+                                              style: TextStyle(fontSize: 16.0),
+                                            ),
+                                            SizedBox(width: 8.0),
+                                            Expanded(
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(10.0),
+                                                child: LinearProgressIndicator(
+                                                  value: kovanNem / 100,
+                                                  backgroundColor: Colors.grey[300],
+                                                  color: Colors.blueAccent,
+                                                  minHeight: 8.0,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 16.0),
+                                  // Açma/Kapama Düğmeleri
+                                  Column(
+                                    children: [
+                                      // Düğme etiketleri
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text("Petek", style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                                          Text("Kapak", style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                                          Text("Polen", style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                                        ],
+                                      ),
+                                      SizedBox(height: 8.0),
+                                      // Switchler
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Switch(
+                                            value: deviceStatus2,
+                                            onChanged: (bool value) {
+                                              FirebaseFirestore.instance
+                                                  .collection('Hives')
+                                                  .doc('UserHives')
+                                                  .collection(authSnapshot.data!.uid)
+                                                  .doc(document.id)
+                                                  .update({'device_status2': value});
+                                            },
+                                          ),
+                                          Switch(
+                                            value: deviceStatus2,
+                                            onChanged: (bool value) {
+                                              FirebaseFirestore.instance
+                                                  .collection('Hives')
+                                                  .doc('UserHives')
+                                                  .collection(authSnapshot.data!.uid)
+                                                  .doc(document.id)
+                                                  .update({'device_status2': value});
+                                            },
+                                          ),
+                                          Switch(
+                                            value: deviceStatus3,
+                                            onChanged: (bool value) {
+                                              FirebaseFirestore.instance
+                                                  .collection('Hives')
+                                                  .doc('UserHives')
+                                                  .collection(authSnapshot.data!.uid)
+                                                  .doc(document.id)
+                                                  .update({'device_status3': value});
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
                           );
-                        }).toList(),
+                        },
                       );
-
                     } else {
-                      return Text("Kullanıcı verisi bulunamadı.");
+                      return Center(child: Text("Kullanıcı verisi bulunamadı."));
                     }
                   }
                 },
               );
             } else {
-              return Text("Kullanıcı girişi yapılmadı..");
+              return Center(child: Text("Kullanıcı girişi yapılmadı."));
             }
           }
         },
-      )
-
+      ),
     );
+
   }
 }
 
