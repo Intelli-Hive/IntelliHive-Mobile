@@ -160,13 +160,25 @@ class _AddHivePageState extends State<AddHivePage> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Icon(
+                Icons.local_florist,
+                color: Colors.orangeAccent,
+                size: 30.0,
+              ),
+              SizedBox(width: 8.0),
               Text(
                 "Kovan Ekle",
                 style: TextStyle(
                     color: Colors.orangeAccent,
                     fontSize: 25.0,
                     fontWeight: FontWeight.bold),
-              )
+              ),
+              SizedBox(width: 8.0),
+              Icon(
+                Icons.local_florist,
+                color: Colors.orangeAccent,
+                size: 30.0,
+              ),
             ],
           ),
         ),

@@ -5,9 +5,8 @@ import 'package:intellihive_mobile_app/Pages/Home_Page/hive_control.dart';
 
 
 class DataPerUserPage extends StatefulWidget {
-  final String title;
 
-  DataPerUserPage({Key? key, required this.title}) : super(key: key);
+  DataPerUserPage({Key? key}) : super(key: key);
 
   @override
   _DataPerUserPageState createState() => _DataPerUserPageState();
@@ -50,8 +49,33 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.emoji_nature,
+              color: Colors.orangeAccent,
+              size: 30.0,
+            ),
+            SizedBox(width: 8.0),
+            Text(
+              "Comodo Bee",
+              style: TextStyle(
+                color: Colors.orangeAccent,
+                fontSize: 25.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(width: 8.0),
+            Icon(
+              Icons.emoji_nature,
+              color: Colors.orangeAccent,
+              size: 30.0,
+            ),
+          ],
+        ),
       ),
+
       body: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, AsyncSnapshot<User?> authSnapshot) {

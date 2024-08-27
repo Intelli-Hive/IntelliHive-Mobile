@@ -55,7 +55,7 @@ class _PageViewDemoState extends State<PageViewDemo> {
         controller: _pageController,
         children: [
           //HomePage(),
-          DataPerUserPage(title: "DataPerUser"),
+          DataPerUserPage(),
           AddHivePage(),
           ProfilePage(),
         ],
@@ -68,9 +68,9 @@ class _PageViewDemoState extends State<PageViewDemo> {
     return BottomNavigationBar(
       currentIndex: selectedPage,
       items: [
-        BottomNavigationBarItem(label: "HomePage", icon: Icon(Icons.home)),
-        BottomNavigationBarItem(label: "HivePage", icon: Icon(Icons.pages)),
-        BottomNavigationBarItem(label: "ProfilePage", icon: Icon(Icons.person)),
+        BottomNavigationBarItem(label: "Petek Kontrol", icon: Icon(Icons.hive)),
+        BottomNavigationBarItem(label: "Kovan Ekle", icon: Icon(Icons.add_box)),
+        BottomNavigationBarItem(label: "Profilim", icon: Icon(Icons.person)),
         //BottomNavigationBarItem(label: "DataPerUser", icon: Icon(Icons.person)),
       ],
       onTap: (int index) {
