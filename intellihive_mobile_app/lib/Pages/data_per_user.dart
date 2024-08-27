@@ -14,69 +14,35 @@ class DataPerUserPage extends StatefulWidget {
 }
 
 class _DataPerUserPageState extends State<DataPerUserPage> {
-  String? _selectedValue;
-  bool _isElectricityChecked = false;
-  List<bool> _electricityStates = [];
+  List<bool> _electricityStatesPetek = [];
+  List<bool> _electricityStatesKapak = [];
+  List<bool> _electricityStatesPolen = [];
   CollectionReference? _userHives;
-
-  final _kovanPetekOnOffController = TextEditingController();
-  final _kovanKapakOnOffController = TextEditingController();
-  final _kovanPolenOnOffController = TextEditingController();
 
   Future<void> _updateMotorsStatePetek(bool isElectricityOn,
       [DocumentSnapshot? documentSnapshot]) async {
-    if (isElectricityOn) {
-      if (documentSnapshot != null) {
-        _kovanPetekOnOffController.text = 'true';
-        // Veritabanını güncelle
-        await _userHives
-            ?.doc(documentSnapshot.id)
-            .update({"kovan_petek_on_off": "true"});
-      }
-    } else {
-      _kovanPetekOnOffController.text = 'false';
-      // Veritabanını güncelle
-      await _userHives
-          ?.doc(documentSnapshot!.id)
-          .update({"kovan_petek_on_off": "false"});
+    if (documentSnapshot != null) {
+      await _userHives?.doc(documentSnapshot.id).update({
+        "kovan_petek_on_off": isElectricityOn ? "true" : "false",
+      });
     }
   }
 
   Future<void> _updateMotorsStateKapak(bool isElectricityOn,
       [DocumentSnapshot? documentSnapshot]) async {
-    if (isElectricityOn) {
-      if (documentSnapshot != null) {
-        _kovanKapakOnOffController.text = 'true';
-        // Veritabanını güncelle
-        await _userHives
-            ?.doc(documentSnapshot.id)
-            .update({"kovan_kapak_on_off": "true"});
-      }
-    } else {
-      _kovanKapakOnOffController.text = 'false';
-      // Veritabanını güncelle
-      await _userHives
-          ?.doc(documentSnapshot!.id)
-          .update({"kovan_kapak_on_off": "false"});
+    if (documentSnapshot != null) {
+      await _userHives?.doc(documentSnapshot.id).update({
+        "kovan_kapak_on_off": isElectricityOn ? "true" : "false",
+      });
     }
   }
 
   Future<void> _updateMotorsStatePolen(bool isElectricityOn,
       [DocumentSnapshot? documentSnapshot]) async {
-    if (isElectricityOn) {
-      if (documentSnapshot != null) {
-        _kovanPolenOnOffController.text = 'true';
-        // Veritabanını güncelle
-        await _userHives
-            ?.doc(documentSnapshot.id)
-            .update({"kovan_polen_on_off": "true"});
-      }
-    } else {
-      _kovanPolenOnOffController.text = 'false';
-      // Veritabanını güncelle
-      await _userHives
-          ?.doc(documentSnapshot!.id)
-          .update({"kovan_polen_on_off": "false"});
+    if (documentSnapshot != null) {
+      await _userHives?.doc(documentSnapshot.id).update({
+        "kovan_polen_on_off": isElectricityOn ? "true" : "false",
+      });
     }
   }
 
@@ -95,7 +61,6 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
             return Center(child: Text("Error: ${authSnapshot.error}"));
           } else {
             if (authSnapshot.data != null) {
-
               final userId = authSnapshot.data!.uid;
               _userHives = FirebaseFirestore.instance
                   .collection('Hives')
@@ -115,22 +80,50 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   } else {
                     if (snapshot.hasData) {
-                      // Veritabanından gelen öğelerin sayısına göre electricityStates listesini ayarla
-                      if (_electricityStates.length !=
+                      // Veritabanından gelen öğelerin sayısına göre listeleri ayarla
+                      if (_electricityStatesPetek.length !=
                           snapshot.data!.docs.length) {
-                        _electricityStates = List.generate(
-                            snapshot.data!.docs.length, (_) => false);
+                        _electricityStatesPetek =
+                            snapshot.data!.docs.map((doc) {
+                          return (doc['kovan_petek_on_off'] == 'true');
+                        }).toList();
                       }
+
+                      if (_electricityStatesKapak.length !=
+                          snapshot.data!.docs.length) {
+                        _electricityStatesKapak =
+                            snapshot.data!.docs.map((doc) {
+                          return (doc['kovan_kapak_on_off'] == 'true');
+                        }).toList();
+                      }
+
+                      if (_electricityStatesPolen.length !=
+                          snapshot.data!.docs.length) {
+                        _electricityStatesPolen =
+                            snapshot.data!.docs.map((doc) {
+                          return (doc['kovan_polen_on_off'] == 'true');
+                        }).toList();
+                      }
+
                       return ListView.builder(
                         padding: const EdgeInsets.all(16.0),
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
-                          DocumentSnapshot document = snapshot.data!.docs[index];
-                          Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-                          String kovanPlaka = data['kovan_plaka'] ?? "Değer Yok";
-                          double kovanSicaklik = double.tryParse(data['kovan_sicaklik'].toString()) ?? 0.0;
-                          double kovanNem = double.tryParse(data['kovan_nem'].toString()) ?? 0.0;
-                          double kovanAgirlik = double.tryParse(data['kovan_agirlik'].toString()) ?? 0.0;
+                          DocumentSnapshot document =
+                              snapshot.data!.docs[index];
+                          Map<String, dynamic> data =
+                              document.data()! as Map<String, dynamic>;
+                          String kovanPlaka =
+                              data['kovan_plaka'] ?? "Değer Yok";
+                          double kovanSicaklik = double.tryParse(
+                                  data['kovan_sicaklik'].toString()) ??
+                              0.0;
+                          double kovanNem =
+                              double.tryParse(data['kovan_nem'].toString()) ??
+                                  0.0;
+                          double kovanAgirlik = double.tryParse(
+                                  data['kovan_agirlik'].toString()) ??
+                              0.0;
 
                           return Card(
                             shape: RoundedRectangleBorder(
@@ -144,7 +137,8 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Row(
                                         children: [
@@ -156,11 +150,12 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                           SizedBox(width: 8.0),
                                           Text(
                                             kovanPlaka,
-                                            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontSize: 18.0,
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
-                                      // Yuvarlak Chart ve ağırlık göstergesi
                                       SizedBox(
                                         height: 100,
                                         width: 100,
@@ -168,7 +163,7 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                           alignment: Alignment.center,
                                           children: [
                                             CircularProgressIndicator(
-                                              value: kovanAgirlik / 20, // 0-20 kg arasında değer
+                                              value: kovanAgirlik / 20,
                                               backgroundColor: Colors.grey[200],
                                               color: Colors.green,
                                               strokeWidth: 8.0,
@@ -186,9 +181,9 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                     ],
                                   ),
                                   SizedBox(height: 16.0),
-                                  // Sıcaklık ve Nem için Progress Bars
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Expanded(
                                         child: Row(
@@ -200,10 +195,12 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                             SizedBox(width: 8.0),
                                             Expanded(
                                               child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(10.0),
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
                                                 child: LinearProgressIndicator(
                                                   value: kovanSicaklik / 100,
-                                                  backgroundColor: Colors.grey[300],
+                                                  backgroundColor:
+                                                      Colors.grey[300],
                                                   color: Colors.redAccent,
                                                   minHeight: 8.0,
                                                 ),
@@ -216,7 +213,8 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                   ),
                                   SizedBox(height: 8.0),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Expanded(
                                         child: Row(
@@ -228,10 +226,12 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                             SizedBox(width: 8.0),
                                             Expanded(
                                               child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(10.0),
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
                                                 child: LinearProgressIndicator(
                                                   value: kovanNem / 100,
-                                                  backgroundColor: Colors.grey[300],
+                                                  backgroundColor:
+                                                      Colors.grey[300],
                                                   color: Colors.blueAccent,
                                                   minHeight: 8.0,
                                                 ),
@@ -243,67 +243,65 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                     ],
                                   ),
                                   SizedBox(height: 16.0),
-                                  // Açma/Kapama Düğmeleri
                                   Column(
                                     children: [
-                                      // Düğme etiketleri
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text("Petek", style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-                                          Text("Kapak", style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-                                          Text("Polen", style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                                          Text("Petek",
+                                              style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold)),
+                                          Text("Kapak",
+                                              style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold)),
+                                          Text("Polen",
+                                              style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold)),
                                         ],
                                       ),
-                                      SizedBox(height: 8.0),
-                                      // Switchler
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Switch(
-                                            value: _electricityStates[index],
-                                            // Her bir öğe için ayrı bir durum
+                                            value: _electricityStatesPetek[
+                                                index], // Petek düğmesinin durumu
                                             onChanged: (value) {
                                               setState(() {
-                                                _electricityStates[index] =
-                                                    value; // Değeri değiştir
+                                                _electricityStatesPetek[index] =
+                                                    value;
                                               });
                                               _updateMotorsStatePetek(
-                                                  _electricityStates[index],
-                                                  document); // Değişiklik yapıldığında _update metodu çalışsın
+                                                  value, document);
                                             },
-                                            activeTrackColor: Colors.lightGreenAccent,
-                                            activeColor: Colors.green,
                                           ),
                                           Switch(
-                                            value: _electricityStates[index],
-                                            // Her bir öğe için ayrı bir durum
+                                            value: _electricityStatesKapak[
+                                                index], // Kapak düğmesinin durumu
                                             onChanged: (value) {
                                               setState(() {
-                                                _electricityStates[index] =
-                                                    value; // Değeri değiştir
+                                                _electricityStatesKapak[index] =
+                                                    value;
                                               });
                                               _updateMotorsStateKapak(
-                                                  _electricityStates[index],
-                                                  document); // Değişiklik yapıldığında _update metodu çalışsın
+                                                  value, document);
                                             },
-                                            activeTrackColor: Colors.lightGreenAccent,
-                                            activeColor: Colors.green,
                                           ),
                                           Switch(
-                                            value: _electricityStates[index],
-                                            // Her bir öğe için ayrı bir durum
+                                            value: _electricityStatesPolen[
+                                                index], // Polen düğmesinin durumu
                                             onChanged: (value) {
                                               setState(() {
-                                                _electricityStates[index] =
-                                                    value; // Değeri değiştir
+                                                _electricityStatesPolen[index] =
+                                                    value;
                                               });
                                               _updateMotorsStatePolen(
-                                                  _electricityStates[index],
-                                                  document); // Değişiklik yapıldığında _update metodu çalışsın
+                                                  value, document);
                                             },
-                                            activeTrackColor: Colors.lightGreenAccent,
-                                            activeColor: Colors.green,
                                           ),
                                         ],
                                       ),
@@ -316,22 +314,20 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                         },
                       );
                     } else {
-                      return Center(child: Text("Kullanıcı verisi bulunamadı."));
+                      return Center(child: Text("Veri bulunamadı."));
                     }
                   }
                 },
               );
             } else {
-              return Center(child: Text("Kullanıcı girişi yapılmadı."));
+              return Center(child: Text("Giriş yapmış kullanıcı bulunamadı."));
             }
           }
         },
       ),
     );
-
   }
 }
-
 
 class BeehiveCard extends StatelessWidget {
   final String hiveName;
@@ -351,7 +347,6 @@ class BeehiveCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.grey[200],
@@ -385,7 +380,7 @@ class BeehiveCard extends StatelessWidget {
           Row(
             children: List.generate(
               numBars,
-                  (index) => Expanded(
+              (index) => Expanded(
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   height: 20,
@@ -400,10 +395,16 @@ class BeehiveCard extends StatelessWidget {
             style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 10),
-
           ElevatedButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {return HiveControl();},),);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return HiveControl();
+                  },
+                ),
+              );
               // Butona basıldığında yapılacak işlemler buraya yazılabilir
             },
             child: const Text('İncele'),
