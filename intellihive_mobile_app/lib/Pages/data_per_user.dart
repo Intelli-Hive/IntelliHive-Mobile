@@ -23,7 +23,7 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
   final _kovanKapakOnOffController = TextEditingController();
   final _kovanPolenOnOffController = TextEditingController();
 
-  Future<void> _updateMotorsState(bool isElectricityOn,
+  Future<void> _updateMotorsStatePetek(bool isElectricityOn,
       [DocumentSnapshot? documentSnapshot]) async {
     if (isElectricityOn) {
       if (documentSnapshot != null) {
@@ -39,6 +39,44 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
       await _userHives
           ?.doc(documentSnapshot!.id)
           .update({"kovan_petek_on_off": "false"});
+    }
+  }
+
+  Future<void> _updateMotorsStateKapak(bool isElectricityOn,
+      [DocumentSnapshot? documentSnapshot]) async {
+    if (isElectricityOn) {
+      if (documentSnapshot != null) {
+        _kovanKapakOnOffController.text = 'true';
+        // Veritabanını güncelle
+        await _userHives
+            ?.doc(documentSnapshot.id)
+            .update({"kovan_kapak_on_off": "true"});
+      }
+    } else {
+      _kovanKapakOnOffController.text = 'false';
+      // Veritabanını güncelle
+      await _userHives
+          ?.doc(documentSnapshot!.id)
+          .update({"kovan_kapak_on_off": "false"});
+    }
+  }
+
+  Future<void> _updateMotorsStatePolen(bool isElectricityOn,
+      [DocumentSnapshot? documentSnapshot]) async {
+    if (isElectricityOn) {
+      if (documentSnapshot != null) {
+        _kovanPolenOnOffController.text = 'true';
+        // Veritabanını güncelle
+        await _userHives
+            ?.doc(documentSnapshot.id)
+            .update({"kovan_polen_on_off": "true"});
+      }
+    } else {
+      _kovanPolenOnOffController.text = 'false';
+      // Veritabanını güncelle
+      await _userHives
+          ?.doc(documentSnapshot!.id)
+          .update({"kovan_polen_on_off": "false"});
     }
   }
 
@@ -76,7 +114,13 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                   } else if (snapshot.hasError) {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   } else {
-                    if (snapshot.data != null) {
+                    if (snapshot.hasData) {
+                      // Veritabanından gelen öğelerin sayısına göre electricityStates listesini ayarla
+                      if (_electricityStates.length !=
+                          snapshot.data!.docs.length) {
+                        _electricityStates = List.generate(
+                            snapshot.data!.docs.length, (_) => false);
+                      }
                       return ListView.builder(
                         padding: const EdgeInsets.all(16.0),
                         itemCount: snapshot.data!.docs.length,
@@ -87,9 +131,6 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                           double kovanSicaklik = double.tryParse(data['kovan_sicaklik'].toString()) ?? 0.0;
                           double kovanNem = double.tryParse(data['kovan_nem'].toString()) ?? 0.0;
                           double kovanAgirlik = double.tryParse(data['kovan_agirlik'].toString()) ?? 0.0;
-                          bool deviceStatus1 = data['device_status1'] ?? false;
-                          bool deviceStatus2 = data['device_status2'] ?? false;
-                          bool deviceStatus3 = data['device_status3'] ?? false;
 
                           return Card(
                             shape: RoundedRectangleBorder(
@@ -220,37 +261,49 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Switch(
-                                            value: deviceStatus2,
-                                            onChanged: (bool value) {
-                                              FirebaseFirestore.instance
-                                                  .collection('Hives')
-                                                  .doc('UserHives')
-                                                  .collection(authSnapshot.data!.uid)
-                                                  .doc(document.id)
-                                                  .update({'device_status2': value});
+                                            value: _electricityStates[index],
+                                            // Her bir öğe için ayrı bir durum
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _electricityStates[index] =
+                                                    value; // Değeri değiştir
+                                              });
+                                              _updateMotorsStatePetek(
+                                                  _electricityStates[index],
+                                                  document); // Değişiklik yapıldığında _update metodu çalışsın
                                             },
+                                            activeTrackColor: Colors.lightGreenAccent,
+                                            activeColor: Colors.green,
                                           ),
                                           Switch(
-                                            value: deviceStatus2,
-                                            onChanged: (bool value) {
-                                              FirebaseFirestore.instance
-                                                  .collection('Hives')
-                                                  .doc('UserHives')
-                                                  .collection(authSnapshot.data!.uid)
-                                                  .doc(document.id)
-                                                  .update({'device_status2': value});
+                                            value: _electricityStates[index],
+                                            // Her bir öğe için ayrı bir durum
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _electricityStates[index] =
+                                                    value; // Değeri değiştir
+                                              });
+                                              _updateMotorsStateKapak(
+                                                  _electricityStates[index],
+                                                  document); // Değişiklik yapıldığında _update metodu çalışsın
                                             },
+                                            activeTrackColor: Colors.lightGreenAccent,
+                                            activeColor: Colors.green,
                                           ),
                                           Switch(
-                                            value: deviceStatus3,
-                                            onChanged: (bool value) {
-                                              FirebaseFirestore.instance
-                                                  .collection('Hives')
-                                                  .doc('UserHives')
-                                                  .collection(authSnapshot.data!.uid)
-                                                  .doc(document.id)
-                                                  .update({'device_status3': value});
+                                            value: _electricityStates[index],
+                                            // Her bir öğe için ayrı bir durum
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _electricityStates[index] =
+                                                    value; // Değeri değiştir
+                                              });
+                                              _updateMotorsStatePolen(
+                                                  _electricityStates[index],
+                                                  document); // Değişiklik yapıldığında _update metodu çalışsın
                                             },
+                                            activeTrackColor: Colors.lightGreenAccent,
+                                            activeColor: Colors.green,
                                           ),
                                         ],
                                       ),
