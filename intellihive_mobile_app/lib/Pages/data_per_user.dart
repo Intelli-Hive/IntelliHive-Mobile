@@ -157,27 +157,33 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                         ],
                                       ),
                                       SizedBox(
-                                        height: 100,
-                                        width: 100,
+                                        height: 70, // Boyutu artırdık
+                                        width: 70,  // Boyutu artırdık
                                         child: Stack(
                                           alignment: Alignment.center,
                                           children: [
-                                            CircularProgressIndicator(
-                                              value: kovanAgirlik / 20,
-                                              backgroundColor: Colors.grey[200],
-                                              color: Colors.green,
-                                              strokeWidth: 8.0,
+                                            Container(
+                                              height: 100, // CircularProgressIndicator'un boyutunu ayarladık
+                                              width: 100,  // CircularProgressIndicator'un boyutunu ayarladık
+                                              child: CircularProgressIndicator(
+                                                value: kovanAgirlik / 20,
+                                                backgroundColor: Colors.grey[200],
+                                                color: Colors.green,
+                                                strokeWidth: 8.0, // Halkanın kalınlığını istediğiniz gibi ayarlayabilirsiniz
+                                              ),
                                             ),
                                             Text(
-                                              "$kovanAgirlik kg",
+                                              "$kovanAgirlik\nkg",
                                               style: TextStyle(
-                                                fontSize: 14.0,
+                                                fontSize: 14.0, // Yazı boyutunu artırabilirsiniz
                                                 fontWeight: FontWeight.bold,
                                               ),
+                                              textAlign: TextAlign.center,
                                             ),
                                           ],
                                         ),
                                       ),
+
                                     ],
                                   ),
                                   SizedBox(height: 16.0),
@@ -220,7 +226,7 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                         child: Row(
                                           children: [
                                             Text(
-                                              "Nem: ${kovanNem.toStringAsFixed(1)}%",
+                                              "     Nem:  ${kovanNem.toStringAsFixed(1)}%",
                                               style: TextStyle(fontSize: 16.0),
                                             ),
                                             SizedBox(width: 8.0),
