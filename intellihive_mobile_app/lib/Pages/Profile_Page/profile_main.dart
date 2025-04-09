@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intellihive_mobile_app/Pages/Profile_Page/Welcome_Page/profile_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'Login_Page/login_page.dart';
 import 'Login_Page/rounded_button.dart';
@@ -34,6 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: _title,
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -133,7 +135,7 @@ class ProfilePageMain extends StatelessWidget {
               const SizedBox(height: 20),
               ProfileInfoRow(
                 label: 'Üyelik Tarihi',
-                value: '01.01.2022',
+                value: '01.01.2025',
               ),
               // Diğer bilgiler buraya eklenebilir
               const SizedBox(height: 20),
@@ -169,6 +171,68 @@ class ProfilePageMain extends StatelessWidget {
                   }
                 },
                 color: Colors.redAccent.withOpacity(0.7),
+              ),
+              InkWell(
+                onTap: () async {
+                  final Uri uri = Uri.parse('https://intelli-hive.github.io/comodobee.com'); // kendi linkin
+
+                  final bool? userConfirmed = await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Dış bağlantı'),
+                        content: const Text(
+                            'Web sitemiz internet tarayıcınızda açılacaktır. Devam edilsin mi?'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('Vazgeç'),
+                            onPressed: () => Navigator.of(context).pop(false),
+                          ),
+                          TextButton(
+                            child: const Text('Devam Et'),
+                            onPressed: () => Navigator.of(context).pop(true),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+
+                  if (userConfirmed == true) {
+                    final bool launched = await launchUrl(
+                      uri,
+                      mode: LaunchMode.externalApplication,
+                    );
+                    if (!launched) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Bağlantı açılamadı.')),
+                      );
+                    }
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(top: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.blue),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.link, color: Colors.blue),
+                      SizedBox(width: 8),
+                      Text(
+                        'Web Sitemizi Ziyaret Edin!',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

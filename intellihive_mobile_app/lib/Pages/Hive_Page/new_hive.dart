@@ -214,6 +214,7 @@ class _NewHiveState extends State<NewHive> {
                         kovan_petek_sayisi: _kovanPetekSayisiController.text.trim(),
                         kovan_petek_on_off: "false",
                         kovan_polen_on_off: "false",
+                        kovan_buhar_on_off: "false",
                     );
 
                     Navigator.pop(context);

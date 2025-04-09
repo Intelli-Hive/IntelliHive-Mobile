@@ -16,6 +16,7 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
   List<bool> _electricityStatesPetek = [];
   List<bool> _electricityStatesKapak = [];
   List<bool> _electricityStatesPolen = [];
+  List<bool> _electricityStatesBuhar = [];
   CollectionReference? _userHives;
 
   Future<void> _updateMotorsStatePetek(bool isElectricityOn,
@@ -41,6 +42,15 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
     if (documentSnapshot != null) {
       await _userHives?.doc(documentSnapshot.id).update({
         "kovan_polen_on_off": isElectricityOn ? "true" : "false",
+      });
+    }
+  }
+
+  Future<void> _updateMotorsStateBuhar(bool isElectricityOn,
+      [DocumentSnapshot? documentSnapshot]) async {
+    if (documentSnapshot != null) {
+      await _userHives?.doc(documentSnapshot.id).update({
+        "kovan_buhar_on_off": isElectricityOn ? "true" : "false",
       });
     }
   }
@@ -127,6 +137,14 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                             snapshot.data!.docs.map((doc) {
                           return (doc['kovan_polen_on_off'] == 'true');
                         }).toList();
+                      }
+
+                      if (_electricityStatesBuhar.length !=
+                          snapshot.data!.docs.length) {
+                        _electricityStatesBuhar =
+                            snapshot.data!.docs.map((doc) {
+                              return (doc['kovan_buhar_on_off'] == 'true');
+                            }).toList();
                       }
 
                       return ListView.builder(
@@ -291,6 +309,10 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                               style: TextStyle(
                                                   fontSize: 16.0,
                                                   fontWeight: FontWeight.bold)),
+                                          Text("Buhar",
+                                              style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold)),
                                         ],
                                       ),
                                       Row(
@@ -330,6 +352,18 @@ class _DataPerUserPageState extends State<DataPerUserPage> {
                                                     value;
                                               });
                                               _updateMotorsStatePolen(
+                                                  value, document);
+                                            },
+                                          ),
+                                          Switch(
+                                            value: _electricityStatesBuhar[
+                                            index], // Buhar düğmesinin durumu
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _electricityStatesBuhar[index] =
+                                                    value;
+                                              });
+                                              _updateMotorsStateBuhar(
                                                   value, document);
                                             },
                                           ),
